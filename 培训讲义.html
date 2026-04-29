@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日志实时分析系统培训讲义</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',flowchart:{htmlLabels:true,curve:'basis'},themeVariables:{fontSize:'14px'}});</script>
+<style>
+/* ===== VitePress-inspired Light Theme ===== */
+:root {
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-soft: #f6f6f7;
+  --vp-c-bg-mute: #e9e9eb;
+  --vp-c-divider: #e2e2e3;
+  --vp-c-text-1: #213547;
+  --vp-c-text-2: #476582;
+  --vp-c-text-3: #8e99a4;
+  --vp-c-brand: #3451b2;
+  --vp-c-brand-light: #3a5ccc;
+  --vp-c-brand-soft: rgba(100,108,255,.08);
+  --vp-c-green: #21a870;
+  --vp-c-green-soft: #f0fdf4;
+  --vp-c-yellow: #c58c07;
+  --vp-c-yellow-soft: #fefce8;
+  --vp-c-red: #e13238;
+  --vp-c-red-soft: #fef2f2;
+  --vp-c-purple: #6f42c1;
+  --vp-c-purple-soft: #f5f3ff;
+  --vp-c-orange: #d97706;
+  --vp-c-cyan: #0891b2;
+  --vp-c-pink: #db2777;
+  --vp-sidebar-w: 272px;
+  --vp-nav-h: 0px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif;background:var(--vp-c-bg);color:var(--vp-c-text-1);line-height:1.75;font-size:15px}
+
+/* ===== Sidebar ===== */
+.sidebar{position:fixed;top:0;left:0;width:var(--vp-sidebar-w);height:100vh;background:var(--vp-c-bg-soft);border-right:1px solid var(--vp-c-divider);overflow-y:auto;padding:20px 0;z-index:100;transition:transform .25s ease}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--vp-c-divider);border-radius:4px}
+.sidebar .logo{padding:0 20px 16px;font-size:16px;font-weight:700;color:var(--vp-c-brand);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--vp-c-divider);margin-bottom:12px}
+.sidebar .logo svg{width:22px;height:22px;flex-shrink:0}
+/* Collapsible nav groups */
+.nav-group{padding:0 12px}
+.nav-group-title{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 4px;font-size:13px;font-weight:700;color:var(--vp-c-text-1);cursor:pointer;user-select:none;border-radius:6px;transition:background .15s}
+.nav-group-title:hover{background:var(--vp-c-bg-mute)}
+.nav-group-title .arrow{font-size:10px;color:var(--vp-c-text-3);transition:transform .2s;display:inline-block}
+.nav-group.collapsed .arrow{transform:rotate(-90deg)}
+.nav-group.collapsed .nav-links{display:none}
+.nav-links{padding:0 0 4px}
+.nav-links a{display:block;padding:4px 8px 4px 20px;font-size:13px;color:var(--vp-c-text-2);text-decoration:none;border-radius:6px;transition:all .15s;line-height:1.6}
+.nav-links a:hover{color:var(--vp-c-brand);background:var(--vp-c-brand-soft)}
+.nav-links a.active{color:var(--vp-c-brand);font-weight:600;background:var(--vp-c-brand-soft)}
+.sidebar .top-link{display:block;padding:6px 20px;font-size:13px;color:var(--vp-c-text-2);text-decoration:none;transition:color .15s}
+.sidebar .top-link:hover{color:var(--vp-c-brand)}
+
+/* ===== Main ===== */
+.main{margin-left:var(--vp-sidebar-w);max-width:784px;padding:32px 32px 96px 48px}
+
+/* ===== Hero ===== */
+.hero{padding:48px 0 40px;margin-bottom:32px;border-bottom:1px solid var(--vp-c-divider)}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-.02em;line-height:1.2;background:linear-gradient(135deg,var(--vp-c-brand) 0%,var(--vp-c-purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .tagline{margin-top:12px;font-size:16px;color:var(--vp-c-text-2);max-width:560px;line-height:1.7}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.hero .meta span{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;color:var(--vp-c-text-2);background:var(--vp-c-bg-soft);border:1px solid var(--vp-c-divider)}
+.hero .meta span b{color:var(--vp-c-brand);font-weight:600}
+
+/* ===== TOC Grid ===== */
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:20px 0 8px}
+.toc-card{background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:8px;padding:16px 18px;text-decoration:none;color:inherit;transition:all .2s}
+.toc-card:hover{border-color:var(--vp-c-brand);box-shadow:0 2px 12px rgba(52,81,178,.07)}
+.toc-card .ch-num{font-size:11px;color:var(--vp-c-brand);font-weight:700;letter-spacing:.5px}
+.toc-card .ch-title{font-size:14px;font-weight:600;margin:4px 0 2px;color:var(--vp-c-text-1)}
+.toc-card .ch-time{font-size:12px;color:var(--vp-c-text-3)}
+.toc-card.hl{border-color:#e9d5ff;background:var(--vp-c-purple-soft)}
+.toc-card.hl .ch-num{color:var(--vp-c-purple)}
+
+/* ===== Chapter ===== */
+.chapter{margin-top:56px;scroll-margin-top:24px}
+.chapter-header{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--vp-c-divider)}
+.chapter-header .badge{min-width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#fff;flex-shrink:0}
+.chapter-header h2{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.chapter-header .time{font-size:12px;color:var(--vp-c-text-3);margin-left:auto;background:var(--vp-c-bg-soft);padding:4px 12px;border-radius:12px;border:1px solid var(--vp-c-divider);white-space:nowrap}
+.bg-blue{background:#3451b2}.bg-orange{background:#d97706}.bg-green{background:#21a870}.bg-purple{background:#6f42c1}.bg-red{background:#e13238}.bg-cyan{background:#0891b2}.bg-pink{background:#db2777}
+
+/* ===== Typography ===== */
+h3{font-size:18px;font-weight:700;margin:36px 0 12px;color:var(--vp-c-text-1);letter-spacing:-.01em}
+h4{font-size:15px;font-weight:600;margin:24px 0 8px;color:var(--vp-c-text-1)}
+p{margin:10px 0}
+ul,ol{margin:8px 0 8px 20px}
+li{margin:4px 0}
+strong{color:var(--vp-c-brand);font-weight:600}
+a{color:var(--vp-c-brand);text-decoration:none}
+a:hover{text-decoration:underline}
+blockquote{border-left:3px solid var(--vp-c-brand);background:var(--vp-c-brand-soft);padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0;font-size:14px;color:var(--vp-c-text-2)}
+
+/* ===== Callout ===== */
+.callout{border-radius:8px;padding:14px 16px;margin:14px 0;border:1px solid;display:flex;gap:10px;font-size:14px}
+.callout .icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.callout.story{border-color:#e9d5ff;background:var(--vp-c-purple-soft)}
+.callout.warn{border-color:#fde68a;background:var(--vp-c-yellow-soft)}
+.callout.tip{border-color:#bbf7d0;background:var(--vp-c-green-soft)}
+.callout.demo{border-color:#bae6fd;background:#f0f9ff}
+
+/* ===== Code ===== */
+pre{background:var(--vp-c-bg-soft);border:1px solid var(--vp-c-divider);border-radius:8px;padding:16px 20px;margin:12px 0;overflow-x:auto;font-size:13px;line-height:1.7}
+pre code{font-family:'JetBrains Mono','Fira Code','SF Mono','Menlo',monospace;color:var(--vp-c-text-1)}
+code{font-family:'JetBrains Mono','Fira Code',monospace;background:var(--vp-c-bg-mute);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--vp-c-text-1)}
+pre code{background:none;padding:0}
+.kw{color:#6f42c1}.str{color:#21a870}.cm{color:#8e99a4}.fn{color:#3451b2}.num{color:#c58c07}.type{color:#db2777}
+
+/* ===== Table ===== */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+th{background:var(--vp-c-bg-soft);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--vp-c-text-1);border-bottom:2px solid var(--vp-c-divider)}
+td{padding:10px 14px;border-bottom:1px solid var(--vp-c-divider)}
+tr:hover td{background:var(--vp-c-brand-soft)}
+
+/* ===== Mermaid with fullscreen ===== */
+.mermaid-wrap{position:relative;margin:16px 0;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:8px;padding:20px;overflow-x:auto}
+.mermaid-wrap .dia-title{font-size:12px;font-weight:600;color:var(--vp-c-text-3);margin-bottom:8px;display:block;text-transform:uppercase;letter-spacing:.5px}
+.mermaid-wrap .fullscreen-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:6px;border:1px solid var(--vp-c-divider);background:var(--vp-c-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--vp-c-text-3);transition:all .15s;z-index:2}
+.mermaid-wrap .fullscreen-btn:hover{background:var(--vp-c-bg-soft);color:var(--vp-c-brand);border-color:var(--vp-c-brand)}
+.mermaid-wrap .fullscreen-btn svg{width:16px;height:16px}
+/* Fullscreen overlay */
+.diagram-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.97);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;padding:40px}
+.diagram-overlay.show{display:flex}
+.diagram-overlay .close-btn{position:absolute;top:20px;right:24px;width:40px;height:40px;border-radius:8px;border:1px solid var(--vp-c-divider);background:var(--vp-c-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--vp-c-text-2);transition:all .15s}
+.diagram-overlay .close-btn:hover{background:var(--vp-c-red-soft);color:var(--vp-c-red);border-color:var(--vp-c-red)}
+.diagram-overlay .overlay-title{font-size:14px;font-weight:600;color:var(--vp-c-text-3);margin-bottom:20px;text-transform:uppercase;letter-spacing:.5px}
+.diagram-overlay .overlay-content{max-width:90vw;max-height:80vh;overflow:auto}
+.diagram-overlay .overlay-content svg{max-width:100%;height:auto}
+
+/* ===== Timeline ===== */
+.timeline{position:relative;padding-left:24px;margin:14px 0}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--vp-c-divider)}
+.timeline .item{position:relative;margin:12px 0}
+.timeline .item::before{content:'';position:absolute;left:-21px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--vp-c-brand);border:2px solid var(--vp-c-bg)}
+.timeline .year{font-weight:700;color:var(--vp-c-orange);font-size:13px}
+.timeline .desc{color:var(--vp-c-text-2);font-size:14px}
+
+/* ===== Compare ===== */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.compare-card{background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:8px;padding:14px}
+.compare-card.good{border-color:#86efac;background:var(--vp-c-green-soft)}
+.compare-card.bad{border-color:#fca5a5;background:var(--vp-c-red-soft)}
+.compare-card .label{font-size:13px;font-weight:700;margin-bottom:4px}
+.compare-card.good .label{color:var(--vp-c-green)}
+.compare-card.bad .label{color:var(--vp-c-red)}
+
+/* ===== Steps ===== */
+.steps{counter-reset:step;margin:14px 0}
+.step{counter-increment:step;position:relative;padding:12px 16px 12px 48px;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:8px;margin:6px 0;font-size:14px}
+.step::before{content:counter(step);position:absolute;left:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--vp-c-brand);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+
+/* ===== Details (QA) ===== */
+details{margin:8px 0;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:8px;padding:14px 16px;font-size:14px}
+details summary{cursor:pointer;font-weight:600;color:var(--vp-c-brand);list-style:none}
+details summary::before{content:'▶';display:inline-block;margin-right:8px;font-size:10px;transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+details summary::-webkit-details-marker{display:none}
+
+/* ===== Footer ===== */
+.footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--vp-c-divider);color:var(--vp-c-text-3);font-size:13px;text-align:center}
+
+/* ===== Sidebar toggle (always visible) ===== */
+.sidebar-toggle{position:fixed;top:14px;left:var(--vp-sidebar-w);z-index:200;width:28px;height:28px;border-radius:0 6px 6px 0;border:1px solid var(--vp-c-divider);border-left:none;background:var(--vp-c-bg-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--vp-c-text-3);transition:all .25s ease;box-shadow:2px 0 6px rgba(0,0,0,.04)}
+.sidebar-toggle:hover{color:var(--vp-c-brand);background:var(--vp-c-bg)}
+.sidebar-toggle svg{width:16px;height:16px;transition:transform .25s}
+/* Collapsed state */
+body.sidebar-collapsed .sidebar{transform:translateX(calc(-1 * var(--vp-sidebar-w)))}
+body.sidebar-collapsed .sidebar-toggle{left:0;border-radius:0 6px 6px 0;border-left:none}
+body.sidebar-collapsed .sidebar-toggle svg{transform:rotate(180deg)}
+body.sidebar-collapsed .main{margin-left:auto;margin-right:auto}
+/* Smooth transition on main */
+.main{transition:margin-left .25s ease}
+.sidebar{transition:transform .25s ease}
+/* ===== Mobile ===== */
+.menu-toggle{display:none}
+@media(max-width:960px){
+  .sidebar{transform:translateX(calc(-1 * var(--vp-sidebar-w)))}
+  .sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.08)}
+  .main{margin-left:0!important;padding:24px 20px 80px}
+  .sidebar-toggle{display:none}
+  .menu-toggle{display:block;position:fixed;top:12px;left:12px;z-index:200;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:8px;padding:7px 11px;color:var(--vp-c-text-1);cursor:pointer;font-size:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .compare-grid{grid-template-columns:1fr}
+  .hero h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+
+<!-- Fullscreen overlay for diagrams -->
+<div class="diagram-overlay" id="diagramOverlay">
+  <button class="close-btn" onclick="closeDiagramOverlay()" title="关闭">&#10005;</button>
+  <div class="overlay-title" id="overlayTitle"></div>
+  <div class="overlay-content" id="overlayContent"></div>
+</div>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<!-- Sidebar collapse/expand toggle (desktop) -->
+<button class="sidebar-toggle" id="sidebarToggle" title="收起/展开导航" onclick="document.body.classList.toggle('sidebar-collapsed')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+</button>
+
+<!-- ===== Sidebar with collapsible groups ===== -->
+<aside class="sidebar">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    日志分析培训
+  </div>
+  <a href="#hero" class="top-link">课程概览</a>
+
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="this.parentElement.classList.toggle('collapsed')">第零章 开场 <span class="arrow">▼</span></div>
+    <div class="nav-links"><a href="#s01">安全事件案例</a><a href="#s02">技术演进</a><a href="#s03">培训场景</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="this.parentElement.classList.toggle('collapsed')">第一章 Vector <span class="arrow">▼</span></div>
+    <div class="nav-links"><a href="#s11">采集器江湖</a><a href="#s12">Rust 优势</a><a href="#s13">核心架构</a><a href="#s14">性能对比</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="this.parentElement.classList.toggle('collapsed')">第二章 Kafka <span class="arrow">▼</span></div>
+    <div class="nav-links"><a href="#s21">诞生故事</a><a href="#s23">核心概念</a><a href="#s24">性能秘诀</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="this.parentElement.classList.toggle('collapsed')">第三章 Flink &#11088; <span class="arrow">▼</span></div>
+    <div class="nav-links"><a href="#s31">进化史</a><a href="#s33">运行时架构</a><a href="#s35">窗口机制</a><a href="#s36">Event Time</a><a href="#s37">State &amp; Checkpoint</a><a href="#s38">源码精读</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="this.parentElement.classList.toggle('collapsed')">第四章 ClickHouse &#11088; <span class="arrow">▼</span></div>
+    <div class="nav-links"><a href="#s41">诞生故事</a><a href="#s42">行存 vs 列存</a><a href="#s43">性能秘诀</a><a href="#s44">表设计</a><a href="#s46">SQL 演练</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="this.parentElement.classList.toggle('collapsed')">第五章 实战演示 <span class="arrow">▼</span></div>
+    <div class="nav-links"><a href="#ch5">完整数据流</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="this.parentElement.classList.toggle('collapsed')">第六章 总结 <span class="arrow">▼</span></div>
+    <div class="nav-links"><a href="#ch6">四组件全景</a><a href="#qa">Q&amp;A</a></div>
+  </div>
+</aside>
+
+<div class="main">
+
+<section class="hero" id="hero">
+  <h1>日志实时分析系统<br>培训讲义</h1>
+  <p class="tagline">基于 Vector + Kafka + Flink + ClickHouse 构建完整的日志实时采集、缓冲、计算与存储链路，以 SSH 暴力破解检测为实战案例。</p>
+  <div class="meta">
+    <span>&#9200; 总时长 <b>90 分钟</b></span>
+    <span>&#128187; 实战 <b>SSH 暴力破解检测</b></span>
+    <span>&#128230; 环境 <b>Docker Compose</b></span>
+  </div>
+</section>
+
+<h3 style="margin-top:0;">课程目录</h3>
+<div class="toc-grid">
+  <a class="toc-card" href="#ch0"><div class="ch-num">第零章</div><div class="ch-title">开场：日志分析的前世今生</div><div class="ch-time">8 min</div></a>
+  <a class="toc-card" href="#ch1"><div class="ch-num">第一章</div><div class="ch-title">Vector：新一代日志采集器</div><div class="ch-time">10 min</div></a>
+  <a class="toc-card" href="#ch2"><div class="ch-num">第二章</div><div class="ch-title">Kafka：分布式消息引擎</div><div class="ch-time">15 min</div></a>
+  <a class="toc-card hl" href="#ch3"><div class="ch-num">第三章 &#11088; 重点</div><div class="ch-title">Flink：流式计算引擎</div><div class="ch-time">25 min</div></a>
+  <a class="toc-card hl" href="#ch4"><div class="ch-num">第四章 &#11088; 重点</div><div class="ch-title">ClickHouse：列式 OLAP 引擎</div><div class="ch-time">22 min</div></a>
+  <a class="toc-card" href="#ch5"><div class="ch-num">第五章</div><div class="ch-title">端到端实战 &amp; 现场演示</div><div class="ch-time">8 min</div></a>
+  <a class="toc-card" href="#ch6"><div class="ch-num">第六章</div><div class="ch-title">总结与延伸</div><div class="ch-time">2 min</div></a>
+</div>
+
+<!-- BODY_PLACEHOLDER -->
+<!-- ===================== CH0 ===================== -->
+<div class="chapter" id="ch0">
+<div class="chapter-header"><div class="badge bg-blue">0</div><h2>开场：日志分析的前世今生</h2><span class="time">8 min</span></div>
+
+<h3 id="s01">0.1 一个真实的安全事件</h3>
+<div class="callout story"><span class="icon">&#128270;</span><div>
+<p>2014 年，某全球知名零售商的 POS 系统被植入恶意软件，攻击者在长达 <strong>19 天</strong>内窃取了 7000 万条客户信用卡信息。安全团队的 SIEM 系统其实产生了告警——但淹没在每天数百万条日志中，无人处理。</p>
+<p>这不是技术失败，而是<strong>日志分析能力</strong>的失败。</p>
+</div></div>
+<ol>
+  <li><strong>日志是安全的最后一道防线</strong>——攻击者的行为一定会留下日志痕迹</li>
+  <li><strong>光收集不够，必须实时分析</strong>——T+1 的日志分析在安全场景下等于没有</li>
+  <li><strong>需要自动化的规则引擎</strong>——人眼不可能盯住每秒数万条日志</li>
+</ol>
+
+<h3 id="s02">0.2 日志分析技术的演进</h3>
+<div class="timeline">
+  <div class="item"><span class="year">2000s</span><br><span class="desc">grep + awk + cron — 运维手动写脚本，延迟小时级</span></div>
+  <div class="item"><span class="year">2010</span><br><span class="desc">ELK Stack — 全文检索 + 可视化，但倒排索引占空间大</span></div>
+  <div class="item"><span class="year">2015</span><br><span class="desc">Kafka + Spark Streaming — 微批处理，延迟 > 100ms</span></div>
+  <div class="item"><span class="year">2018+ &#11088;</span><br><span class="desc">Vector + Kafka + Flink + ClickHouse — 秒级检测 + 亚秒级查询</span></div>
+</div>
+
+<h3 id="s03">0.3 今天的培训场景</h3>
+<p>构建 <strong>SSH 暴力破解实时检测系统</strong>：1 分钟内同一 IP 登录失败超过 5 次 → 告警。</p>
+
+<div class="mermaid-wrap"><span class="dia-title">检测链路总览</span>
+<pre class="mermaid">
+flowchart LR
+  A["🐍 log_sender.py\n攻击模拟器"] -->|"TCP:514\nRFC 3164 syslog"| B["🦀 Vector\n日志采集"]
+  B -->|"Kafka Producer"| C["📨 Kafka\nlog-demo topic"]
+  C -->|"KafkaSource"| D["⚡ Flink\n流式分析"]
+  D -->|"HTTP 批量写入"| E["🏛️ ClickHouse\nraw_logs"]
+  D -->|"count ≥ 5"| F["🚨 AlertEvent"]
+  F -->|"HTTP 写入"| G["🏛️ ClickHouse\nalert_logs"]
+
+  style A fill:#fef2f2,stroke:#dc2626
+  style B fill:#f0fdf4,stroke:#16a34a
+  style C fill:#fff7ed,stroke:#ea580c
+  style D fill:#faf5ff,stroke:#7c3aed
+  style E fill:#eff6ff,stroke:#2563eb
+  style G fill:#fef2f2,stroke:#dc2626
+  style F fill:#fffbeb,stroke:#d97706
+</pre></div>
+
+<h4>一条日志的完整旅程</h4>
+<div class="steps">
+  <div class="step">模拟器生成 syslog：<code>&lt;84&gt;Apr 17 14:23:01 web-server-01 sshd[3847]: Failed password for root from 192.168.1.100 port 52413 ssh2</code></div>
+  <div class="step">Vector 接收 TCP → 原样转发到 Kafka topic <code>log-demo</code></div>
+  <div class="step">Flink KafkaSource 消费 → LogParser 解析出 host / severity / program / message</div>
+  <div class="step">全量日志写入 ClickHouse <code>raw_logs</code> 表</div>
+  <div class="step">过滤 "Failed password" → 提取 IP → 按 IP 分组 → 1 分钟窗口计数</div>
+  <div class="step">计数 ≥ 5 → 生成 AlertEvent → 写入 ClickHouse <code>alert_logs</code> 表</div>
+</div>
+
+<h4>培训环境架构</h4>
+<div class="mermaid-wrap"><span class="dia-title">Docker Compose 容器编排</span>
+<pre class="mermaid">
+graph TB
+  subgraph Docker["Docker Compose 容器编排"]
+    V["Vector\n:514 TCP\n256MB"] --> K["Kafka 3.7.0\n:19092\n1GB"]
+    K --> FJM["Flink JobManager\n:8081 WebUI\n1GB"]
+    FJM --> FTM["Flink TaskManager\n4 Slots\n2GB"]
+    FTM --> CH["ClickHouse 23.4\n:8123 / :9000\n2GB"]
+    K --> KUI["Kafka UI\n:18080\n512MB"]
+  end
+  style V fill:#f0fdf4,stroke:#16a34a
+  style K fill:#fff7ed,stroke:#ea580c
+  style FJM fill:#faf5ff,stroke:#7c3aed
+  style FTM fill:#faf5ff,stroke:#7c3aed
+  style CH fill:#eff6ff,stroke:#2563eb
+  style KUI fill:#fff7ed,stroke:#ea580c
+</pre></div>
+<blockquote>环境要求：Linux x86_64，内存 &ge; 8GB，磁盘 &ge; 10GB。所有镜像已离线打包，无需联网。</blockquote>
+</div>
+
+<!-- ===================== CH1 Vector ===================== -->
+<div class="chapter" id="ch1">
+<div class="chapter-header"><div class="badge bg-green">1</div><h2>Vector：新一代日志采集器</h2><span class="time">10 min</span></div>
+
+<h3 id="s11">1.1 日志采集器的江湖</h3>
+<h4>第一代：Logstash（2009）</h4>
+<ul><li>JRuby 编写，一个进程吃掉 <strong>800MB~1GB 内存</strong></li></ul>
+<div class="callout story"><span class="icon">&#128218;</span><div>趣闻：早期 Logstash 的 logo 是一根木头（log = 原木），后来才改成现在的样子。</div></div>
+<h4>第二代：Fluentd / Fluent Bit（2011/2015）</h4>
+<ul><li>CNCF 毕业项目，Kubernetes 生态标配。Fluent Bit 纯 C，极致轻量（~15MB）</li></ul>
+<h4>第三代：Vector（2019）</h4>
+<ul><li>Timber.io 用 <strong>Rust</strong> 从零构建，2021 年被 Datadog 以约 <strong>1 亿美元</strong>收购</li></ul>
+
+<h3 id="s12">1.2 为什么选 Rust？</h3>
+<table>
+  <tr><th></th><th>C</th><th>C++</th><th>Go</th><th>Rust</th></tr>
+  <tr><td>内存安全</td><td style="color:var(--red)">&#10007;</td><td style="color:var(--red)">&#10007;</td><td style="color:var(--green)">&#10003; (GC)</td><td style="color:var(--green)">&#10003; 所有权</td></tr>
+  <tr><td>并发安全</td><td style="color:var(--red)">&#10007;</td><td style="color:var(--red)">&#10007;</td><td style="color:var(--green)">&#10003;</td><td style="color:var(--green)">&#10003; 编译期</td></tr>
+  <tr><td>零成本抽象</td><td style="color:var(--green)">&#10003;</td><td style="color:var(--green)">&#10003;</td><td style="color:var(--red)">&#10007;</td><td style="color:var(--green)">&#10003;</td></tr>
+  <tr><td>无 GC 停顿</td><td style="color:var(--green)">&#10003;</td><td style="color:var(--green)">&#10003;</td><td style="color:var(--red)">&#10007;</td><td style="color:var(--green)">&#10003;</td></tr>
+</table>
+
+<h3 id="s13">1.3 Vector 核心架构</h3>
+<div class="mermaid-wrap"><span class="dia-title">Vector 内部 DAG</span>
+<pre class="mermaid">
+flowchart LR
+  IN["TCP:514\nsyslog"] --> SRC["Source\nsocket/syslog_tcp"]
+  SRC --> TF["Transform\n(可选: 过滤/改写/富化)"]
+  TF --> SK["Sink\nkafka_out"]
+  SK --> OUT["Kafka\nlog-demo"]
+  subgraph Vector
+    SRC
+    TF
+    SK
+  end
+  style Vector fill:#f0fdf4,stroke:#16a34a
+</pre></div>
+
+<table>
+  <tr><th>组件</th><th>作用</th><th>常用类型</th></tr>
+  <tr><td>Source</td><td>数据入口</td><td><code>socket</code>, <code>file</code>, <code>journald</code>, <code>kafka</code></td></tr>
+  <tr><td>Transform</td><td>数据处理</td><td><code>remap</code>(VRL), <code>filter</code>, <code>route</code></td></tr>
+  <tr><td>Sink</td><td>数据出口</td><td><code>kafka</code>, <code>clickhouse</code>, <code>elasticsearch</code></td></tr>
+</table>
+
+<h3 id="s14">1.4 性能对比</h3>
+<table>
+  <tr><th>采集器</th><th>吞吐 (events/s)</th><th>内存</th><th>语言</th></tr>
+  <tr><td>Logstash 8.x</td><td>~25,000</td><td>800 MB</td><td>JRuby</td></tr>
+  <tr><td>Fluentd 1.x</td><td>~40,000</td><td>120 MB</td><td>Ruby/C</td></tr>
+  <tr><td>Fluent Bit 2.x</td><td>~150,000</td><td>15 MB</td><td>C</td></tr>
+  <tr style="background:#eff6ff"><td><strong>Vector 0.49</strong></td><td><strong>~300,000</strong></td><td><strong>40 MB</strong></td><td><strong>Rust</strong></td></tr>
+</table>
+
+<h3>1.5 本项目的 Vector 配置</h3>
+<pre><code><span class="cm"># config/vector.yaml</span>
+<span class="kw">sources</span>:
+  syslog_tcp:
+    <span class="kw">type</span>: socket          <span class="cm"># 原始 TCP socket</span>
+    <span class="kw">mode</span>: tcp
+    <span class="kw">address</span>: <span class="str">"0.0.0.0:514"</span>
+<span class="kw">sinks</span>:
+  kafka_out:
+    <span class="kw">type</span>: kafka
+    <span class="kw">inputs</span>: [syslog_tcp]
+    <span class="kw">bootstrap_servers</span>: <span class="str">"kafka:9092"</span>
+    <span class="kw">topic</span>: <span class="str">"log-demo"</span>
+    <span class="kw">encoding</span>:
+      <span class="kw">codec</span>: text</code></pre>
+<div class="callout tip"><span class="icon">&#128161;</span><div><strong>设计决策</strong>：解析逻辑放在 Flink 中可以动态更新规则（Broadcast State），Vector 保持"薄代理"角色。</div></div>
+</div>
+
+<!-- ===================== CH2 Kafka ===================== -->
+<div class="chapter" id="ch2">
+<div class="chapter-header"><div class="badge bg-orange">2</div><h2>Kafka：分布式消息引擎</h2><span class="time">15 min</span></div>
+
+<h3 id="s21">2.1 Kafka 的诞生故事</h3>
+<p><strong>2010 年，LinkedIn</strong> 数十个系统点对点连接成了噩梦。三位工程师—— Jay Kreps、Neha Narkhede、饶军——构建了统一消息平台。</p>
+
+<div class="compare-grid">
+<div class="compare-card bad"><div class="label">&#10007; 点对点集成</div>
+<div class="mermaid-wrap" style="margin:0;border:0;padding:8px;background:transparent;">
+<pre class="mermaid">
+graph LR
+  A[用户服务] <--> B[推荐系统]
+  A <--> C[广告系统]
+  B <--> C
+  A <--> D[搜索引擎]
+  B <--> E[监控系统]
+  C <--> F[数据仓库]
+</pre></div></div>
+<div class="compare-card good"><div class="label">&#10003; 引入 Kafka 后</div>
+<div class="mermaid-wrap" style="margin:0;border:0;padding:8px;background:transparent;">
+<pre class="mermaid">
+graph LR
+  A[用户服务] --> K["Apache Kafka"]
+  B[广告系统] --> K
+  C[监控系统] --> K
+  D[日志系统] --> K
+  K --> E[推荐系统]
+  K --> F[搜索引擎]
+  K --> G[数据仓库]
+  K --> H[计费系统]
+  style K fill:#fff7ed,stroke:#ea580c,stroke-width:2px
+</pre></div></div>
+</div>
+
+<div class="callout story"><span class="icon">&#128214;</span><div><strong>命名趣闻</strong>：Jay Kreps 以作家 Franz Kafka 命名——"一个为写作而优化的系统"。</div></div>
+
+<h3>2.2 发展里程碑</h3>
+<div class="timeline">
+  <div class="item"><span class="year">2010</span><span class="desc"> LinkedIn 内部启动</span></div>
+  <div class="item"><span class="year">2011</span><span class="desc"> 开源，捐给 Apache</span></div>
+  <div class="item"><span class="year">2017</span><span class="desc"> Exactly-once 语义（0.11 版本）</span></div>
+  <div class="item"><span class="year">2022</span><span class="desc"> KRaft GA，ZooKeeper 进入淘汰期</span></div>
+  <div class="item"><span class="year">2024</span><span class="desc"> Kafka 4.0 完全移除 ZooKeeper</span></div>
+</div>
+
+<h3 id="s23">2.3 核心概念</h3>
+<div class="mermaid-wrap"><span class="dia-title">Topic 与 Partition</span>
+<pre class="mermaid">
+flowchart LR
+  P["Producer\n(Vector)"] --> P0["Partition 0\noffset: 0,1,2,3..."]
+  P --> P1["Partition 1\noffset: 0,1,2,3..."]
+  P --> P2["Partition 2\noffset: 0,1,2,3..."]
+  P --> P3["Partition 3\noffset: 0,1,2,3..."]
+  P0 --> C0["Consumer 0\n(Flink Slot 0)"]
+  P1 --> C1["Consumer 1\n(Flink Slot 1)"]
+  P2 --> C2["Consumer 2\n(Flink Slot 2)"]
+  P3 --> C3["Consumer 3\n(Flink Slot 3)"]
+  subgraph Topic["Topic: log-demo"]
+    P0; P1; P2; P3
+  end
+  style Topic fill:#fff7ed,stroke:#ea580c
+</pre></div>
+
+<table>
+  <tr><th>概念</th><th>说明</th><th>类比</th></tr>
+  <tr><td><strong>Topic</strong></td><td>消息的逻辑分类</td><td>数据库的"表"</td></tr>
+  <tr><td><strong>Partition</strong></td><td>有序、不可变的追加日志</td><td>表的"分区"</td></tr>
+  <tr><td><strong>Offset</strong></td><td>分区内唯一序号，单调递增</td><td>行号</td></tr>
+  <tr><td><strong>Consumer Group</strong></td><td>协同消费，分区独占</td><td>负载均衡组</td></tr>
+</table>
+
+<h3 id="s24">2.4 Kafka 为什么这么快？</h3>
+<div class="mermaid-wrap"><span class="dia-title">四大性能秘诀</span>
+<pre class="mermaid">
+mindmap
+  root((Kafka 高性能))
+    顺序 I/O
+      磁盘顺序写 ~600 MB/s
+      快于随机内存访问
+    零拷贝 sendfile
+      跳过用户空间
+      2次拷贝 vs 4次
+    Page Cache
+      OS 管理缓存
+      避免 JVM GC
+    批量 + 压缩
+      linger.ms 攒批
+      Broker 不解压存盘
+</pre></div>
+
+<h3>2.5 ZooKeeper → KRaft</h3>
+<div class="compare-grid">
+  <div class="compare-card bad"><div class="label">ZooKeeper 时代 (2011-2023)</div><p style="font-size:13px;">独立运维 ZK 集群 3~5 节点<br>ZK 成为瓶颈（百万分区）<br>元数据同步延迟</p></div>
+  <div class="compare-card good"><div class="label">KRaft 时代 (2022+)</div><p style="font-size:13px;">内置 Raft 共识，无外部依赖<br>支持百万级分区<br>元数据本地化，毫秒级</p></div>
+</div>
+
+<div class="callout demo"><span class="icon">&#127916;</span><div>
+<p><strong>Kafka UI 演示</strong>：打开 <code>http://&lt;host&gt;:18080</code>，查看 Topics / Messages / Consumer Groups</p>
+</div></div>
+</div>
+
+<!-- ===================== CH3 Flink ===================== -->
+<div class="chapter" id="ch3">
+<div class="chapter-header"><div class="badge bg-purple">3</div><h2>Flink：流式计算引擎</h2><span class="time">25 min &#11088; 重点</span></div>
+
+<h3 id="s31">3.1 计算范式进化史</h3>
+<div class="timeline">
+  <div class="item"><span class="year">2004</span><span class="desc"> MapReduce (Google) — 分布式批处理，延迟小时级</span></div>
+  <div class="item"><span class="year">2011</span><span class="desc"> Storm (Twitter) — 第一个流引擎，无状态管理</span></div>
+  <div class="item"><span class="year">2013</span><span class="desc"> Spark Streaming — 微批模型，延迟 > 100ms</span></div>
+  <div class="item"><span class="year">2014</span><span class="desc"> <strong>Flink</strong> (柏林工业大学) — 真流 + 有状态 + Exactly-once</span></div>
+  <div class="item"><span class="year">2015</span><span class="desc"> 阿里 Blink — 双十一实时大屏，峰值 17 亿条/秒</span></div>
+</div>
+<div class="callout story"><span class="icon">&#128063;</span><div>Flink 在德语中意为"敏捷"，logo 是松鼠——既敏捷又会囤坚果（状态存储）。</div></div>
+
+<h3 id="s32">3.2 Flink vs. 竞品</h3>
+<table>
+  <tr><th>维度</th><th>Storm</th><th>Spark Streaming</th><th style="color:var(--vp-c-brand)">Flink</th></tr>
+  <tr><td>模型</td><td>逐条</td><td>微批</td><td><strong>真流</strong></td></tr>
+  <tr><td>延迟</td><td>~ms</td><td>100ms~秒</td><td><strong>~ms</strong></td></tr>
+  <tr><td>状态</td><td>外部 Redis</td><td>RDD Checkpoint</td><td><strong>原生 RocksDB</strong></td></tr>
+  <tr><td>语义</td><td>At-least-once</td><td>Exactly-once(微批)</td><td><strong>Exactly-once(真流)</strong></td></tr>
+  <tr><td>窗口</td><td>基础</td><td>基础</td><td><strong>4 种窗口</strong></td></tr>
+</table>
+
+<h3 id="s33">3.3 运行时架构</h3>
+<div class="mermaid-wrap"><span class="dia-title">Flink 集群架构</span>
+<pre class="mermaid">
+graph TB
+  Client["Client\n提交作业"] --> JM
+  subgraph JM["JobManager"]
+    Disp["Dispatcher\n接收作业/WebUI"]
+    RM["ResourceManager\n资源分配"]
+    JMaster["JobMaster\n协调 Checkpoint"]
+  end
+  JM -->|"部署 Task"| TM1
+  JM -->|"部署 Task"| TM2
+  subgraph TM1["TaskManager 1"]
+    S1["Slot 0\nTask Chain"]
+    S2["Slot 1\nTask Chain"]
+    ST1[("State\nRocksDB")]
+  end
+  subgraph TM2["TaskManager 2"]
+    S3["Slot 0\nTask Chain"]
+    S4["Slot 1\nTask Chain"]
+    ST2[("State\nRocksDB")]
+  end
+  style JM fill:#faf5ff,stroke:#7c3aed
+  style TM1 fill:#eff6ff,stroke:#2563eb
+  style TM2 fill:#eff6ff,stroke:#2563eb
+</pre></div>
+<p><strong>本培训环境</strong>：1 JM (1GB) + 1 TM (2GB, 4 Slot) + HashMapStateBackend</p>
+
+<h3 id="s34">3.4 DataStream API 核心算子</h3>
+<div class="mermaid-wrap"><span class="dia-title">算子分类与数据流</span>
+<pre class="mermaid">
+flowchart LR
+  subgraph Stateless["无状态转换 (可 chain)"]
+    map["map()\n一对一"]
+    flatMap["flatMap()\n一对多"]
+    filter["filter()\n过滤"]
+  end
+  subgraph Partition["分区操作 (shuffle)"]
+    keyBy["keyBy()\n按 key 哈希"]
+    broadcast["broadcast()\n广播"]
+  end
+  subgraph Stateful["有状态操作"]
+    window["window()\n开窗"]
+    process["process()\n自定义处理"]
+  end
+  Stateless --> Partition --> Stateful
+  style Stateless fill:#f0fdf4,stroke:#16a34a
+  style Partition fill:#fffbeb,stroke:#d97706
+  style Stateful fill:#faf5ff,stroke:#7c3aed
+</pre></div>
+
+<h3 id="s35">3.5 窗口机制</h3>
+<div class="mermaid-wrap"><span class="dia-title">三种窗口类型对比</span>
+<pre class="mermaid">
+gantt
+  title 窗口类型对比（时间轴）
+  dateFormat X
+  axisFormat %s
+
+  section Tumbling 滚动
+  Window 1 (本项目) :a1, 0, 60
+  Window 2           :a2, 60, 120
+  Window 3           :a3, 120, 180
+
+  section Sliding 滑动
+  Window A :b1, 0, 60
+  Window B :b2, 30, 90
+  Window C :b3, 60, 120
+
+  section Session 会话
+  Session 1 :c1, 0, 20
+  gap       :c2, 20, 50
+  Session 2 :c3, 50, 90
+</pre></div>
+<p>本项目使用 <code>TumblingProcessingTimeWindows.of(Time.minutes(1))</code>：1 分钟滚动窗口。</p>
+
+<h3 id="s36">3.6 Event Time vs. Processing Time</h3>
+<table>
+  <tr><th></th><th>事件时间 (Event Time)</th><th>处理时间 (Processing Time)</th></tr>
+  <tr><td>定义</td><td>日志里的 timestamp</td><td>算子收到的墙上时间</td></tr>
+  <tr><td>准确性</td><td>高（重放一致）</td><td>低（受网络抖动）</td></tr>
+  <tr><td>需要</td><td>Watermark 机制</td><td>无</td></tr>
+  <tr><td>本实验</td><td>简化未用</td><td style="color:var(--green)">&#10003; 采用</td></tr>
+</table>
+
+<div class="mermaid-wrap"><span class="dia-title">Watermark 处理乱序数据</span>
+<pre class="mermaid">
+sequenceDiagram
+  participant S as 数据源
+  participant F as Flink Operator
+  participant W as Window [0,10)
+
+  S->>F: Event(t=10)
+  S->>F: Event(t=12)
+  S->>F: Event(t=9) ⚠️ 乱序!
+  S->>F: Event(t=15)
+  Note over F: Watermark = 15 - 5 = 10
+  F->>W: 触发窗口计算
+  Note over W: t ≤ 10 的事件都到齐了
+</pre></div>
+<div class="callout warn"><span class="icon">&#9888;&#65039;</span><div>生产环境务必用 Event Time + Watermark：<code>WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(5))</code></div></div>
+
+<h3 id="s37">3.7 State &amp; Checkpoint</h3>
+<h4>State Backend 对比</h4>
+<table>
+  <tr><th></th><th>HashMapStateBackend</th><th>RocksDBStateBackend</th></tr>
+  <tr><td>存储</td><td>JVM 堆内存</td><td>本地磁盘</td></tr>
+  <tr><td>容量</td><td>&lt; 10GB</td><td>TB 级</td></tr>
+  <tr><td>速度</td><td>纳秒级</td><td>微秒级</td></tr>
+  <tr><td>适用</td><td>开发测试</td><td style="color:var(--green)"><strong>生产首选</strong></td></tr>
+</table>
+
+<h4>Checkpoint 流程（Chandy-Lamport 算法）</h4>
+<div class="mermaid-wrap"><span class="dia-title">Checkpoint 实现 Exactly-once</span>
+<pre class="mermaid">
+sequenceDiagram
+  participant JM as JobManager
+  participant Src as Source
+  participant Op as Operator
+  participant Sink as Sink
+  participant S3 as 远程存储(HDFS/S3)
+
+  JM->>Src: 注入 Barrier-N
+  Src->>Src: 快照 Kafka offset
+  Src->>S3: 持久化快照
+  Src->>Op: 转发 Barrier-N
+  Op->>Op: 快照本地 State
+  Op->>S3: 持久化快照
+  Op->>Sink: 转发 Barrier-N
+  Sink->>S3: 持久化快照
+  S3-->>JM: 所有快照完成 ✅
+  Note over JM,S3: 崩溃恢复：回退 offset + 恢复 State = Exactly-once
+</pre></div>
+
+<h3 id="s38">3.8 源码精读：SSH 暴力破解检测 DAG</h3>
+<div class="mermaid-wrap"><span class="dia-title">本项目 Flink DAG</span>
+<pre class="mermaid">
+flowchart TD
+  KS["KafkaSource\nlog-demo topic"] --> LP["LogParser\nflatMap: RFC 3164 → LogEvent"]
+  LP --> RS["ClickHttpSink\nraw_logs (batch=20)"]
+  LP --> FT["filter\n'Failed password'"]
+  FT --> MP["map\n正则提取 IP"]
+  MP --> KB["keyBy(ip)"]
+  KB --> TW["TumblingWindow\n1 分钟"]
+  TW --> BD["BruteForceDetector\ncount ≥ 5 → AlertEvent"]
+  BD --> AS["ClickHttpSink\nalert_logs (batch=1)"]
+
+  style KS fill:#fff7ed,stroke:#ea580c
+  style LP fill:#f0fdf4,stroke:#16a34a
+  style RS fill:#eff6ff,stroke:#2563eb
+  style BD fill:#fef2f2,stroke:#dc2626
+  style AS fill:#fef2f2,stroke:#dc2626
+</pre></div>
+
+<pre><code><span class="cm">// SshBruteForceJob.java — 核心 DAG</span>
+parsedStream
+    .<span class="fn">filter</span>(e -> e.<span class="fn">getMessage</span>().<span class="fn">contains</span>(<span class="str">"Failed password"</span>))
+    .<span class="fn">map</span>(e -> <span class="fn">extractIp</span>(e.<span class="fn">getMessage</span>()))
+    .<span class="fn">keyBy</span>(ip -> ip)
+    .<span class="fn">window</span>(TumblingProcessingTimeWindows.<span class="fn">of</span>(Time.<span class="fn">minutes</span>(<span class="num">1</span>)))
+    .<span class="fn">process</span>(<span class="kw">new</span> <span class="type">BruteForceDetector</span>())  <span class="cm">// count ≥ 5 → 告警</span>
+    .<span class="fn">addSink</span>(<span class="kw">new</span> <span class="type">ClickHttpSink</span>&lt;&gt;(...));</code></pre>
+
+<pre><code><span class="cm">// BruteForceDetector — 窗口处理函数</span>
+<span class="kw">public void</span> <span class="fn">process</span>(String ip, Context ctx, Iterable&lt;String&gt; elements, Collector&lt;AlertEvent&gt; out) {
+    <span class="kw">int</span> count = <span class="num">0</span>;
+    <span class="kw">for</span> (String ignored : elements) count++;
+    <span class="kw">if</span> (count >= <span class="num">5</span>) {
+        out.<span class="fn">collect</span>(<span class="kw">new</span> <span class="type">AlertEvent</span>(..., ip, count, ...));
+    }
+}</code></pre>
+
+<div class="callout demo"><span class="icon">&#127916;</span><div><strong>Flink Web UI</strong>：<code>http://&lt;host&gt;:8081</code> → Running Jobs → DAG / Records / Checkpoints</div></div>
+</div>
+
+<!-- ===================== CH4 ClickHouse ===================== -->
+<div class="chapter" id="ch4">
+<div class="chapter-header"><div class="badge bg-red">4</div><h2>ClickHouse：列式 OLAP 引擎</h2><span class="time">22 min &#11088; 重点</span></div>
+
+<h3 id="s41">4.1 ClickHouse 的诞生</h3>
+<p>2008 年，Yandex 运营 Yandex.Metrica（全球第二大网站分析平台），每天 <strong>200 亿+</strong> 事件。工程师 Aleksey Milovidov 的目标：</p>
+<blockquote>"单台服务器，10 亿行 GROUP BY，1 秒内返回。"</blockquote>
+<div class="timeline">
+  <div class="item"><span class="year">2009</span><span class="desc"> Yandex 内部启动</span></div>
+  <div class="item"><span class="year">2016</span><span class="desc"> 开源</span></div>
+  <div class="item"><span class="year">2021</span><span class="desc"> ClickHouse Inc. 成立，估值 $2B</span></div>
+  <div class="item"><span class="year">2024</span><span class="desc"> DB-Engines "年度数据库"，30,000+ Star</span></div>
+</div>
+
+<h3 id="s42">4.2 行存 vs. 列存</h3>
+<div class="mermaid-wrap"><span class="dia-title">数据存储布局对比</span>
+<pre class="mermaid">
+block-beta
+  columns 2
+  block:row["行存储 (MySQL)"]
+    columns 1
+    r1["Row1: ts | host | sev | fac | prog | pid | msg"]
+    r2["Row2: ts | host | sev | fac | prog | pid | msg"]
+    r3["Row3: ts | host | sev | fac | prog | pid | msg"]
+  end
+  block:col["列存储 (ClickHouse)"]
+    columns 1
+    c1["timestamp列: t1, t2, t3 ..."]
+    c2["host列: h1, h2, h3 ..."]
+    c3["severity列: s1, s2, s3 ..."]
+  end
+
+  style row fill:#fef2f2,stroke:#dc2626
+  style col fill:#f0fdf4,stroke:#16a34a
+</pre></div>
+
+<table>
+  <tr><th>优势</th><th>原理</th><th>效果</th></tr>
+  <tr><td><strong>IO 减少</strong></td><td>只读需要的列</td><td>7 列查 2 列 → IO 减少 71%</td></tr>
+  <tr><td><strong>压缩率高</strong></td><td>同列数据类型相同</td><td>压缩比 10:1（行存 2:1）</td></tr>
+  <tr><td><strong>向量化</strong></td><td>连续存储，SIMD 友好</td><td>单指令处理 8~64 个值</td></tr>
+</table>
+
+<h3 id="s43">4.3 性能秘诀</h3>
+<h4>MergeTree 表引擎</h4>
+<div class="mermaid-wrap"><span class="dia-title">MergeTree 写入与合并流程</span>
+<pre class="mermaid">
+flowchart TD
+  INS["INSERT batch"] --> P1["Part_1\n(100 rows, sorted)"]
+  INS --> P2["Part_2\n(500 rows, sorted)"]
+  P1 --> MG["后台 Merge 线程"]
+  P2 --> MG
+  MG --> PM["Part_merged\n(600 rows, sorted)"]
+  PM --> IDX["稀疏索引\n每 8192 行一个 mark"]
+  PM --> DATA["列数据文件\n.bin per column"]
+
+  style INS fill:#fffbeb,stroke:#d97706
+  style PM fill:#f0fdf4,stroke:#16a34a
+</pre></div>
+
+<h4>稀疏索引（Sparse Index）</h4>
+<div class="mermaid-wrap"><span class="dia-title">稀疏索引查询过程</span>
+<pre class="mermaid">
+flowchart LR
+  Q["查询: WHERE host='db-server'"] --> BIN["二分查找稀疏索引"]
+  BIN --> M2["定位 Mark #2~#3"]
+  M2 --> READ["只读 8192 行数据块"]
+  READ --> FILTER["内存中精确过滤"]
+  FILTER --> RES["返回结果\n跳过 99.2% 数据!"]
+
+  style Q fill:#eff6ff,stroke:#2563eb
+  style RES fill:#f0fdf4,stroke:#16a34a
+</pre></div>
+
+<h3 id="s44">4.4 本项目表设计</h3>
+<pre><code><span class="kw">CREATE TABLE</span> train.raw_logs (
+    timestamp  <span class="type">DateTime64</span>(<span class="num">3</span>),
+    host       <span class="type">String</span>,
+    severity   <span class="type">LowCardinality</span>(<span class="type">String</span>),  <span class="cm">-- 字典编码</span>
+    facility   <span class="type">LowCardinality</span>(<span class="type">String</span>),
+    program    <span class="type">LowCardinality</span>(<span class="type">String</span>),
+    pid        <span class="type">UInt32</span>,
+    message    <span class="type">String</span>
+)
+<span class="kw">ENGINE</span> = MergeTree()
+<span class="kw">PARTITION BY</span> toDate(timestamp)   <span class="cm">-- 按天分区</span>
+<span class="kw">ORDER BY</span> (host, timestamp)       <span class="cm">-- 排序键 = 主键</span>
+<span class="kw">TTL</span> toDate(timestamp) + <span class="kw">INTERVAL</span> <span class="num">7</span> <span class="kw">DAY</span>;</code></pre>
+
+<div class="callout warn"><span class="icon">&#9888;&#65039;</span><div><strong>最大的坑：不要单条 INSERT！</strong>每次 INSERT 创建一个 Part，1000次/秒 → <code>Too many parts</code> 错误。正确做法：攒批写入。</div></div>
+
+<h3 id="s46">4.6 现场 SQL 演练</h3>
+<pre><code><span class="cm">-- 进入客户端</span>
+docker exec -it train-clickhouse clickhouse-client --password train123
+
+<span class="cm">-- 各严重级别分布（带 ASCII 柱状图）</span>
+<span class="kw">SELECT</span> severity, <span class="fn">count</span>() <span class="kw">AS</span> cnt, <span class="fn">bar</span>(cnt, <span class="num">0</span>, <span class="num">1000</span>, <span class="num">40</span>) <span class="kw">AS</span> bar
+<span class="kw">FROM</span> train.raw_logs
+<span class="kw">WHERE</span> timestamp > <span class="fn">now</span>() - <span class="kw">INTERVAL</span> <span class="num">5</span> <span class="kw">MINUTE</span>
+<span class="kw">GROUP BY</span> severity <span class="kw">ORDER BY</span> cnt <span class="kw">DESC</span>;
+
+<span class="cm">-- SSH 失败 Top IP</span>
+<span class="kw">SELECT</span> <span class="fn">extractAll</span>(message, <span class="str">'from ([\\d.]+)'</span>)[<span class="num">1</span>] <span class="kw">AS</span> ip,
+       <span class="fn">count</span>() <span class="kw">AS</span> fail_count
+<span class="kw">FROM</span> train.raw_logs
+<span class="kw">WHERE</span> timestamp > <span class="fn">now</span>() - <span class="kw">INTERVAL</span> <span class="num">5</span> <span class="kw">MINUTE</span>
+  <span class="kw">AND</span> message <span class="kw">LIKE</span> <span class="str">'%Failed password%'</span>
+<span class="kw">GROUP BY</span> ip <span class="kw">ORDER BY</span> fail_count <span class="kw">DESC LIMIT</span> <span class="num">10</span>;
+
+<span class="cm">-- 告警记录</span>
+<span class="kw">SELECT</span> alert_time, source_ip, fail_count, message
+<span class="kw">FROM</span> train.alert_logs <span class="kw">ORDER BY</span> alert_time <span class="kw">DESC LIMIT</span> <span class="num">20</span>;
+
+<span class="cm">-- 压缩率</span>
+<span class="kw">SELECT</span> table,
+  <span class="fn">formatReadableSize</span>(<span class="fn">sum</span>(bytes_on_disk)) <span class="kw">AS</span> disk,
+  <span class="fn">formatReadableSize</span>(<span class="fn">sum</span>(data_uncompressed_bytes)) <span class="kw">AS</span> raw,
+  <span class="fn">round</span>(<span class="fn">sum</span>(data_uncompressed_bytes)/<span class="fn">sum</span>(bytes_on_disk),<span class="num">2</span>) <span class="kw">AS</span> ratio
+<span class="kw">FROM</span> system.parts <span class="kw">WHERE</span> database=<span class="str">'train'</span> <span class="kw">AND</span> active <span class="kw">GROUP BY</span> table;</code></pre>
+
+<h3>4.7 局限性</h3>
+<table>
+  <tr><th>不擅长</th><th>原因</th><th>替代</th></tr>
+  <tr><td>高频 UPDATE</td><td>列存不适合随机修改</td><td>MySQL</td></tr>
+  <tr><td>事务 ACID</td><td>无事务</td><td>PostgreSQL</td></tr>
+  <tr><td>高并发点查</td><td>扫描 granule</td><td>Redis</td></tr>
+  <tr><td>单条写入</td><td>Too many parts</td><td>Kafka/Flink 攒批</td></tr>
+</table>
+</div>
+
+<!-- ===================== CH5 Demo ===================== -->
+<div class="chapter" id="ch5">
+<div class="chapter-header"><div class="badge bg-cyan">5</div><h2>端到端实战 &amp; 现场演示</h2><span class="time">8 min</span></div>
+
+<h3>5.1 完整数据流</h3>
+<div class="mermaid-wrap"><span class="dia-title">一条日志从产生到告警的完整旅程</span>
+<pre class="mermaid">
+flowchart TD
+  A["🐍 Python 模拟器\nlog_sender.py\n正常60s + 攻击40s 循环"] -->|"TCP:514\nRFC 3164"| B["🦀 Vector\nsocket → kafka\n零解析透传"]
+  B -->|"Kafka Producer"| C["📨 Kafka 3.7.0\nlog-demo\n4 partitions"]
+  C -->|"KafkaSource"| D["⚡ Flink 1.18.1"]
+
+  subgraph Flink["Flink DAG"]
+    D --> LP["LogParser"]
+    LP -->|"全量"| S1["raw_logs sink\nbatch=20"]
+    LP -->|"filter"| FT["Failed password"]
+    FT --> EX["extract IP"]
+    EX --> KB["keyBy → window(1min)"]
+    KB -->|"count≥5"| AL["AlertEvent"]
+    AL --> S2["alert_logs sink"]
+  end
+
+  S1 -->|"HTTP POST"| CH1["🏛️ ClickHouse\ntrain.raw_logs\nTTL 7 days"]
+  S2 -->|"HTTP POST"| CH2["🚨 ClickHouse\ntrain.alert_logs\nTTL 30 days"]
+
+  style A fill:#fef2f2,stroke:#dc2626
+  style B fill:#f0fdf4,stroke:#16a34a
+  style C fill:#fff7ed,stroke:#ea580c
+  style Flink fill:#faf5ff,stroke:#7c3aed
+  style CH1 fill:#eff6ff,stroke:#2563eb
+  style CH2 fill:#fef2f2,stroke:#dc2626
+</pre></div>
+
+<h3>5.2 演示操作手册</h3>
+<div class="steps">
+  <div class="step"><strong>确认环境</strong><pre style="margin:6px 0 0"><code>docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"</code></pre></div>
+  <div class="step"><strong>确认 Flink 作业</strong><pre style="margin:6px 0 0"><code>curl -s http://localhost:8081/jobs/overview | python3 -m json.tool</code></pre></div>
+  <div class="step"><strong>启动攻击模拟</strong><pre style="margin:6px 0 0"><code>bash demo.sh</code></pre></div>
+  <div class="step"><strong>多窗口观察</strong>
+    <table style="margin:6px 0 0;font-size:13px;">
+      <tr><th>窗口</th><th>内容</th><th>地址</th></tr>
+      <tr><td>1</td><td>模拟器</td><td><code>bash demo.sh</code></td></tr>
+      <tr><td>2</td><td>Kafka UI</td><td><code>http://&lt;host&gt;:18080</code></td></tr>
+      <tr><td>3</td><td>Flink UI</td><td><code>http://&lt;host&gt;:8081</code></td></tr>
+      <tr><td>4</td><td>ClickHouse</td><td><code>docker exec -it train-clickhouse clickhouse-client --password train123</code></td></tr>
+    </table></div>
+  <div class="step"><strong>验证结果</strong><pre style="margin:6px 0 0"><code><span class="kw">SELECT</span> alert_time, source_ip, fail_count, message
+<span class="kw">FROM</span> train.alert_logs <span class="kw">ORDER BY</span> alert_time <span class="kw">DESC LIMIT</span> <span class="num">5</span>;</code></pre></div>
+</div>
+
+<h3>5.3 模拟器行为</h3>
+<div class="mermaid-wrap"><span class="dia-title">攻击模拟时间线</span>
+<pre class="mermaid">
+gantt
+  title 模拟器行为模式（1x 速度，循环）
+  dateFormat X
+  axisFormat %ss
+
+  section 日志类型
+  正常阶段 (SSH成功/sudo/cron/kernel) :normal1, 0, 60
+  攻击阶段 (同一IP密集SSH失败75%) :crit, attack1, 60, 100
+  正常阶段 :normal2, 100, 160
+  攻击阶段 :crit, attack2, 160, 200
+</pre></div>
+</div>
+
+<!-- ===================== CH6 Summary ===================== -->
+<div class="chapter" id="ch6">
+<div class="chapter-header"><div class="badge bg-pink">6</div><h2>总结与延伸</h2><span class="time">2 min</span></div>
+
+<h3>6.1 四组件协作全景</h3>
+<div class="mermaid-wrap"><span class="dia-title">"采集 → 缓冲 → 计算 → 存储" 四段式架构</span>
+<pre class="mermaid">
+flowchart LR
+  subgraph Collect["采集层"]
+    V["🦀 Vector\nRust · 40MB\n多协议 · 轻量"]
+  end
+  subgraph Buffer["缓冲层"]
+    K["📨 Kafka\nJava · 1GB\n削峰 · 解耦 · 重放"]
+  end
+  subgraph Compute["计算层"]
+    F["⚡ Flink\nJava · 3GB\n解析 · 聚合 · 告警"]
+  end
+  subgraph Store["存储层"]
+    C["🏛️ ClickHouse\nC++ · 2GB\n列存 · 压缩 · 快查"]
+  end
+  V --> K --> F --> C
+
+  style Collect fill:#f0fdf4,stroke:#16a34a
+  style Buffer fill:#fff7ed,stroke:#ea580c
+  style Compute fill:#faf5ff,stroke:#7c3aed
+  style Store fill:#eff6ff,stroke:#2563eb
+</pre></div>
+
+<h3>6.2 生产进阶</h3>
+<table>
+  <tr><th>方向</th><th>培训环境</th><th>生产环境</th></tr>
+  <tr><td>Vector</td><td>单点 TCP</td><td>多节点 + file source + 磁盘缓冲</td></tr>
+  <tr><td>Kafka</td><td>单 Broker, RF=1</td><td>3+ Broker, RF=3, acks=all</td></tr>
+  <tr><td>Flink</td><td>1 TM, HashMap</td><td>多 TM, RocksDB, Event Time</td></tr>
+  <tr><td>ClickHouse</td><td>单节点</td><td>ReplicatedMergeTree + Distributed</td></tr>
+</table>
+
+<h3>6.3 推荐资源</h3>
+<ul>
+  <li>《Designing Data-Intensive Applications》— Martin Kleppmann</li>
+  <li>《Stream Processing with Apache Flink》— Fabian Hueske</li>
+  <li><a href="https://www.youtube.com/watch?v=jHnyBSUVcOU" target="_blank">Kafka Internals — Jun Rao</a></li>
+  <li><a href="https://www.youtube.com/watch?v=StDAXkUa8fE" target="_blank">Flink Forward Keynote — Stephan Ewen</a></li>
+  <li><a href="https://www.youtube.com/watch?v=CvPjDvQjfmo" target="_blank">ClickHouse Internals — Aleksey Milovidov</a></li>
+</ul>
+</div>
+
+<!-- ===================== QA ===================== -->
+<div class="chapter" id="qa">
+<div class="chapter-header"><div class="badge" style="background:linear-gradient(135deg,#64748b,#94a3b8)">?</div><h2>Q&amp;A 常见问题</h2></div>
+
+<details style="margin:10px 0;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:10px;padding:14px 18px;">
+  <summary style="cursor:pointer;font-weight:600;color:var(--vp-c-brand)">Q1: Flink 和 Spark Structured Streaming 怎么选？</summary>
+  <p style="margin-top:6px;">延迟 &lt; 1s、复杂有状态计算 → Flink。批流统一 SQL、已有 Spark 生态 → Spark。</p>
+</details>
+<details style="margin:10px 0;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:10px;padding:14px 18px;">
+  <summary style="cursor:pointer;font-weight:600;color:var(--vp-c-brand)">Q2: ClickHouse 能做 UPDATE 吗？</summary>
+  <p style="margin-top:6px;"><code>ALTER TABLE ... UPDATE</code> 是异步 mutation，重写整个 Part。适合低频修正，不适合 OLTP。</p>
+</details>
+<details style="margin:10px 0;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:10px;padding:14px 18px;">
+  <summary style="cursor:pointer;font-weight:600;color:var(--vp-c-brand)">Q3: Kafka 消息会丢吗？</summary>
+  <p style="margin-top:6px;">三道防线：Producer <code>acks=all</code> + Broker <code>min.insync.replicas=2</code> + Consumer 手动提交 offset。</p>
+</details>
+<details style="margin:10px 0;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:10px;padding:14px 18px;">
+  <summary style="cursor:pointer;font-weight:600;color:var(--vp-c-brand)">Q4: Flink 挂了状态还在吗？</summary>
+  <p style="margin-top:6px;">开了 Checkpoint + 持久化后端，重启自动恢复。Kafka offset 回退 + State 恢复 = 不丢不重。</p>
+</details>
+<details style="margin:10px 0;background:var(--vp-c-bg);border:1px solid var(--vp-c-divider);border-radius:10px;padding:14px 18px;">
+  <summary style="cursor:pointer;font-weight:600;color:var(--vp-c-brand)">Q5: 为什么不直接用 ClickHouse Kafka Engine？</summary>
+  <p style="margin-top:6px;">Kafka Engine 只能简单入库。窗口聚合、状态机、动态规则等复杂流式计算需要 Flink。</p>
+</details>
+</div>
+
+<div class="footer">
+  <p>培训目标：理解四组件核心原理与协作方式，能独立复现 SSH 暴力破解实时检测链路。</p>
+  <p style="margin-top:6px;opacity:.5;">2026</p>
+</div>
+
+</div>
+
+<script>
+// ===== 1. Add fullscreen buttons to all mermaid diagrams =====
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.mermaid-wrap').forEach(wrap => {
+      if (wrap.querySelector('.fullscreen-btn')) return;
+      const btn = document.createElement('button');
+      btn.className = 'fullscreen-btn';
+      btn.title = '全屏查看';
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>';
+      btn.onclick = () => openDiagramOverlay(wrap);
+      wrap.style.position = 'relative';
+      wrap.appendChild(btn);
+    });
+  }, 1500);
+});
+
+function openDiagramOverlay(wrap) {
+  const overlay = document.getElementById('diagramOverlay');
+  const titleEl = wrap.querySelector('.dia-title');
+  document.getElementById('overlayTitle').textContent = titleEl ? titleEl.textContent : '';
+  const svg = wrap.querySelector('svg');
+  const content = document.getElementById('overlayContent');
+  if (svg) {
+    const clone = svg.cloneNode(true);
+    clone.style.maxWidth = '100%';
+    clone.style.height = 'auto';
+    clone.removeAttribute('width');
+    const vb = clone.getAttribute('viewBox');
+    if (vb) {
+      const parts = vb.split(/\s+/);
+      if (parts.length === 4) {
+        clone.style.width = Math.min(parseInt(parts[2]) * 1.5, window.innerWidth * 0.85) + 'px';
+      }
+    }
+    content.innerHTML = '';
+    content.appendChild(clone);
+  }
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDiagramOverlay() {
+  document.getElementById('diagramOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('diagramOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeDiagramOverlay();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDiagramOverlay();
+});
+
+// ===== 2. Sidebar active link tracking =====
+const sections = document.querySelectorAll('.chapter,.hero');
+const navLinks = document.querySelectorAll('.nav-links a, .top-link');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px' });
+sections.forEach(s => obs.observe(s));
+
+// ===== 3. Close sidebar on mobile after click =====
+navLinks.forEach(l => l.addEventListener('click', () => {
+  if (window.innerWidth <= 960) document.querySelector('.sidebar').classList.remove('open');
+}));
+</script>
+</body>
+</html>
